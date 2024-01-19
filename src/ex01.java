@@ -1,15 +1,48 @@
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 
-public class ex00 {
-    public static void main(String[] args) {
-        Set<String> hash_Set = new HashSet<>();
-        String[][] texts = new String[2][];
 
+public class ex01 {
+    public static void main(String[] args) {
+        String[][] texts = new String[args.length][];
+        Set<String> hash_Set = parse(args, texts);
+
+        int[][] textsCounts = countMatches(texts, hash_Set);
+
+        System.out.println(hash_Set);
+        System.out.println(Arrays.deepToString(textsCounts));
+
+        int numer = Numerator(textsCounts);
+        double n1 = Denominator(textsCounts[0]);
+        double n2 = Denominator(textsCounts[1]);
+
+        System.out.println(numer);
+        System.out.println(n1 * n2);
+        System.out.println(numer / (n1 * n2));
+    }
+
+    public static int[][] countMatches(String[][] texts, Set<String> hash_Set) {
+        int[][] ret = new int[texts.length][];
+        int sz = 0;
+        for (int i = 0; i < texts.length; ++i) {
+            int sizeC = 0;
+            int[] count = new int[hash_Set.size()];
+            for (String el : hash_Set) {
+                for (int j = 0; j < texts[i].length; ++j) {
+                    if (el.equals(texts[i][j])) ++sz;
+                }
+                count[sizeC++] = sz;
+                sz = 0;
+            }
+            ret[i] = count;
+        }
+        return ret;
+    }
+
+    public static Set<String> parse(String[] args, String[][] texts) {
+        Set<String> hash_Set = new HashSet<>();
         for(int i = 0; i < args.length; ++i) {
             try {
                 FileInputStream fileInputStream = new FileInputStream("src/"+ args[i]);
@@ -25,32 +58,22 @@ public class ex00 {
                 System.out.println("пиздец");
             }
         }
-        System.out.println(hash_Set);
+        return hash_Set;
+    }
 
-        int []A = new int[hash_Set.size()];
-        int szA = 0;
-        int countA = 0;
-        int countB = 0;
-        int szB = 0;
-        int []B = new int[hash_Set.size()];
-
-        for(String el : hash_Set) {
-            for(int i = 0; i < texts[0].length; ++i) {      // A
-                if(el.equals(texts[0][i])) ++szA;
-            }
-            A[countA++] = szA;
-            szA = 0;
+    public static int Numerator(int[][] textsCounts) {
+        int res = 0;
+        for (int i = 0; i < textsCounts[0].length; ++i) {
+            res += textsCounts[0][i] * textsCounts[1][i];
         }
+        return res;
+    }
 
-        for(String el : hash_Set) {
-            for(int i = 0; i < texts[1].length; ++i) {      // B
-                if(el.equals(texts[1][i])) ++szB;
-            }
-            B[countB++] = szB;
-            szB = 0;
+    public static double Denominator(int[] textCounts) {
+        double res = 0;
+        for (int textCount : textCounts) {
+            res += textCount * textCount;
         }
-
-        System.out.println(Arrays.toString(A));
-        System.out.println(Arrays.toString(B));
+        return Math.sqrt(res);
     }
 }
