@@ -27,7 +27,7 @@ public class ex02 {
                         break;
 
                     case ("mv"):
-                        System.out.println("это mv");
+                        mvCommand(currentDir, str);
                         break;
 
                     case ("exit"):
@@ -63,6 +63,24 @@ public class ex02 {
 
     public static File cdCommand(File currentDir, String str) throws IOException {
         String[] path = str.split(" ")[1].split("/");
+        currentDir = changePath(currentDir, path);
+        System.out.println(currentDir.getPath());
+        return currentDir;
+    }
+
+    public static void mvCommand(File currentDir, String str) throws IOException {                  // исправить mv
+        File moveFile = new File(currentDir.getPath() + "/" + str.split(" ")[1]);
+        File dirMove = changePath(currentDir, str.split(" ")[2].split("/"));
+
+        boolean success = moveFile.renameTo(dirMove);
+        if (success) {
+            System.out.println("Файл успешно перемещен.");
+        } else {
+            System.out.println("Не удалось переместить файл.");
+        }
+    }
+
+    public static File changePath(File currentDir, String[] path) throws IOException {
         for (String part : path) {
 
             if (!new File(currentDir.getPath() + "/" + part).isDirectory()) {
@@ -70,15 +88,14 @@ public class ex02 {
             }
 
             switch (part) {
-                    case (".."):
-                        currentDir = new File(currentDir.getParent());
-                        break;
-                    default:
-                        currentDir = new File(currentDir.getPath() + "/" + part);
-                        break;
+                case (".."):
+                    currentDir = new File(currentDir.getParent());
+                    break;
+                default:
+                    currentDir = new File(currentDir.getPath() + "/" + part);
+                    break;
             }
         }
-        System.out.println(currentDir.getPath());
         return currentDir;
     }
 }
