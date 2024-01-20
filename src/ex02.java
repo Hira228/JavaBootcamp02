@@ -1,7 +1,11 @@
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.io.File;
+
+enum CHECK_TYPE {
+    CHECK_DIR,
+    NOT_CHECK_DIR
+}
 
 public class ex02 {
 
@@ -9,8 +13,6 @@ public class ex02 {
         File currentDir = new File(args[0]);
         Scanner scanner = new Scanner(System.in);
         ChoiceCommands(scanner, currentDir);
-
-
     }
 
     public static void ChoiceCommands(Scanner scanner, File currentDir) {
@@ -31,6 +33,7 @@ public class ex02 {
                         break;
 
                     case ("exit"):
+                        scanner.close();
                         System.exit(0);
                         break;
 
@@ -63,15 +66,17 @@ public class ex02 {
 
     public static File cdCommand(File currentDir, String str) throws IOException {
         String[] path = str.split(" ")[1].split("/");
-        currentDir = changePath(currentDir, path);
+        currentDir = changePath(currentDir, path, CHECK_TYPE.CHECK_DIR);
         System.out.println(currentDir.getPath());
         return currentDir;
     }
-
+//new File(currentDir.getPath() + "/" + str.split(" ")[1]);
     public static void mvCommand(File currentDir, String str) throws IOException {                  // исправить mv
-        File moveFile = new File(currentDir.getPath() + "/" + str.split(" ")[1]);
-        File dirMove = changePath(currentDir, str.split(" ")[2].split("/"));
-
+        File moveFile = changePath(currentDir, str.split(" ")[1].split("/"), CHECK_TYPE.NOT_CHECK_DIR);
+        File dirMove = changePath(currentDir, str.split(" ")[2].split("/"), CHECK_TYPE.NOT_CHECK_DIR);
+        if(dirMove.isDirectory()) {
+            dirMove = new File(dirMove.getPath() + "/" + str.split(" ")[1]);
+        }
         boolean success = moveFile.renameTo(dirMove);
         if (success) {
             System.out.println("Файл успешно перемещен.");
@@ -80,10 +85,10 @@ public class ex02 {
         }
     }
 
-    public static File changePath(File currentDir, String[] path) throws IOException {
+    public static File changePath(File currentDir, String[] path, CHECK_TYPE TYPE) throws IOException {
         for (String part : path) {
 
-            if (!new File(currentDir.getPath() + "/" + part).isDirectory()) {
+            if (!new File(currentDir.getPath() + "/" + part).isDirectory() && TYPE == CHECK_TYPE.CHECK_DIR) {
                 throw new IOException("Это файл, а не директория");
             }
 
