@@ -11,16 +11,11 @@ public class ex01 {
 
         int[][] textsCounts = countMatches(texts, hash_Set);
 
-        System.out.println(hash_Set);
-        System.out.println(Arrays.deepToString(textsCounts));
-
         int numer = Numerator(textsCounts);
         double n1 = Denominator(textsCounts[0]);
         double n2 = Denominator(textsCounts[1]);
 
-        System.out.println(numer);
-        System.out.println(n1 * n2);
-        System.out.println(numer / (n1 * n2));
+        System.out.println("Similarity = " + numer / (n1 * n2));
     }
 
     public static int[][] countMatches(String[][] texts, Set<String> hash_Set) {
